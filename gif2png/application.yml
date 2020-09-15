@@ -1,0 +1,28 @@
+model_runner:
+  version: v2
+
+python:
+  version: 3.5.9
+
+model:
+  name: GIF动态图转图片
+  version: v0.0.1
+
+apis:
+  - endpoint: /api/model
+    http_method: POST
+    body:
+      method: gen_test_img_base64
+      kwargs:
+    response:
+      status: str  # ok|err
+      value: str  # 压缩图像的base64编码字符串 或 错误描述
+  - endpoint: /api/model
+    http_method: POST
+    body:
+      method: split_gif_base64
+      kwargs:
+        img_base64: str  # 压缩图像的base64编码字符串
+    response:
+      status: str  # ok|err
+      value: int  # 手写数字识别结果 或 错误描述
