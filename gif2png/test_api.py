@@ -17,36 +17,6 @@ elif test_mode == 3:
 else:
     url_model = 'https://cubeai.dimpt.com/ability/model/0e08af7d9c8e4115937edc9ddbab4a64'
     url_stream = 'https://cubeai.dimpt.com/ability/stream/0e08af7d9c8e4115937edc9ddbab4a64/'
-    
-
-def test_gen_test_img_bin():
-    body = {
-        'method': 'gen_test_img_bin',
-        'kwargs': {},
-    }
-
-    response = requests.post(url=url_model, data=json.dumps(body))
-    img_bin = response.content
-
-    if not os.path.exists('temp'):
-        os.system('mkdir temp')
-    with open('temp/result_img.jpg', 'wb') as f:
-        f.write(img_bin)
-        print('随机二进制图像已存入临时文件：' + 'temp/result_img.jpg')
-
-
-def test_classify_bin():
-    with open('temp/result_img.jpg', 'rb') as f:
-        img_bin = f.read()
-
-    url = url_stream + 'classify_bin'
-    response = requests.post(url=url, data=img_bin)
-    result = json.loads(response.text, encoding='utf-8')
-
-    if result['status'] == 'ok':
-        print('基于二进制压缩图像的识别结果： {}'.format(result['value']))
-    else:
-        print(result['value'])
 
 
 def test_gen_test_img_base64():
@@ -68,12 +38,12 @@ def test_gen_test_img_base64():
         print(result['value'])
 
 
-def test_classify_base64():
+def test_split_gif_base64():
     with open('temp/result_base64.txt', 'r') as f:
         img_base64 = f.read()
 
     body = {
-        'method': 'classify_base64',
+        'method': 'split_gif_base64',
         'kwargs': {
             'img_base64': img_base64,
         },
@@ -87,7 +57,6 @@ def test_classify_base64():
         print(result['value'])
 
 
-test_gen_test_img_bin()
-test_classify_bin()
+
 test_gen_test_img_base64()
-test_classify_base64()
+test_split_gif_base64()

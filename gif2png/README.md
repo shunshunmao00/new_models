@@ -1,10 +1,10 @@
-# 手写数字识别
+# GIF动态图转图片
 
-该模型基于卷积神经网络（CNN）实现手写数字识别，使用Keras框架实现，识别正确率为95%左右。
+该模型使用PIL工具实现将GIF动态读逐帧转为静态PNG图片
 
 ## API接口
 
-本模型提供了5个API接口：
+本模型提供了2个API接口：
 
 - API接口1：
 
@@ -35,70 +35,18 @@
     - HTTP请求体：
     
             {
-                "method": "gen_test_img_bin"
-                "kwargs": {}
-            }
-
-    - HTTP响应体：
-        
-            <二进制编码的压缩图像字节流>
-            
-- API接口3：
-
-    - API端点： /api/model
-    
-    - HTTP方法： POST
-    
-    - HTTP请求体：
-    
-            {
-                "method": "classify_base64"
+                "method": "split_gif_base64"
                 "kwargs": {
-                    "img_base64": <压缩图像的base64编码字符串>
-                }
+						"img_base64": <压缩图像的base64编码字符串>
+				}
             }
 
     - HTTP响应体：
-        
-            {
+			{
                 "status": "ok"|"err",
                 "value": <手写数字识别结果>|<错误描述>
             }
-            
-- API接口4：
-
-    - API端点： /api/stream/classify_bin
-    
-    - HTTP方法： POST
-    
-    - HTTP请求体：
-    
-            <二进制编码的压缩图像字节流>
-            
-    - HTTP响应体：
         
-            {
-                "status": "ok"|"err",
-                "value": <手写数字识别结果>|<错误描述>
-            }
-            
-- API接口5：
-
-    - API端点： /api/file/classify_bin
-    
-    - HTTP方法： POST
-    
-    - HTTP请求体：
-    
-            <用于HTTP文件上传的XHR格式请求体>
-            
-    - HTTP响应体：
-        
-            {
-                "status": "ok"|"err",
-                "value": <手写数字识别结果>|<错误描述>
-            }
-            
 ## 模型开发
 
 1. 开发环境准备

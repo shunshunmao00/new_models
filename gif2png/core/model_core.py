@@ -30,14 +30,8 @@ class ModelCore(object):
     def split_gif(self, gif, ws_topic):
         # GIF图片流的迭代器
         iter = ImageSequence.Iterator(gif)
-        # 获取文件名
-        file_name = 'split'
         index = 1
-        # 判断目录是否存在
-        pic_dirct = "imgs/{0}".format(file_name)
-        mkdirlambda = lambda x: os.makedirs(
-            x) if not os.path.exists(x) else True  # 目录是否存在,不存在则创建
-        mkdirlambda(pic_dirct)
+
         # 遍历图片流的每一帧
         for frame in iter:
             print("image %d: mode %s, size %s" % (index, frame.mode, frame.size))
