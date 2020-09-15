@@ -1,0 +1,43 @@
+<my-pageheader></my-pageheader>
+
+<mat-card style="margin: 20px 20px 50px 20px">
+    <h2 align="center">GIF动态图转图片</h2>
+    <div class="row justify-content-center">
+        <mat-card style="width: 90%">
+            <button mat-raised-button (click)="genTestImage()" [disabled]="sending">
+                生成随机测试图像
+            </button>
+            &nbsp;&nbsp;&nbsp;&nbsp;或&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="file" ng2FileSelect [uploader]="fileSelector" accept=".jpg, .jpeg, .png, .gif, image/*" [disabled]="sending" />
+            <br>
+            <div>
+                <img style="max-width: 100%" src="{{selectedImgDataUrl}}" alt="">
+            </div>
+        </mat-card>
+    </div>
+    <br>
+    <div class="row justify-content-center">
+        <button mat-raised-button color="primary" (click)="paint()" [disabled]="sending">
+            开始
+        </button>
+    </div>
+    <br>
+    <div class="row justify-content-center">
+        <mat-card style="width: 90%">
+            <div *ngIf="sending">
+                正在努力计算...
+            </div>
+            <mat-spinner *ngIf="sending"></mat-spinner>
+            <div class="row">
+                <mat-card *ngFor="let result of tempResults" class="pull-right" style="max-width: 320px; max-height: 320px; margin: 10px">
+                    <img mat-card-image src="{{result}}">
+                </mat-card>
+            </div>
+            <br>
+            <div *ngIf="error">
+                出错啦...
+            </div>
+        </mat-card>
+    </div>
+</mat-card>
+
