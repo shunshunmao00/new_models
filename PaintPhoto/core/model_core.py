@@ -21,8 +21,6 @@ class ModelCore(object):
         # set default argument
         pass
 
-
-
     def decode(self, x, canvas):  # b * (10 + 3)
         x = x.view(-1, 10 + 3)
         stroke = 1 - self.Decoder(x[:, :10])
