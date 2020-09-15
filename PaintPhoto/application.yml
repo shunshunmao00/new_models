@@ -19,10 +19,10 @@ apis:
       status: str  # ok|err
       value: list  # [<手绘照片过程的base64编码URL字符串>, ...]
   - endpoint: /api/model
-      http_method: POST
-      body:
-        method: gen_test_img_base64
-        kwargs:
-      response:
-        status: str  # ok|err
-        value: str  # 压缩图像的base64编码字符串 或 错误描述
+    http_method: POST
+    body:
+      method: gen_test_img_base64
+      kwargs:
+    response:
+      status: str  # ok|err
+      value: str  # 压缩图像的base64编码字符串 或 错误描述

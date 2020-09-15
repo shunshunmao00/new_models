@@ -1,11 +1,11 @@
 import os
 import random
 import re
-from baseline.DRL.actor import *
-from baseline.Renderer.stroke_gen import *
-from baseline.Renderer.model import *
-from util import image_tools
 import asyncio
+from core.baseline.DRL.actor import *
+from core.baseline.Renderer.stroke_gen import *
+from core.baseline.Renderer.model import *
+from core.util import image_tools
 from core.global_data import g
 
 device = torch.device("cpu")
