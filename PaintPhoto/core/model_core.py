@@ -1,4 +1,6 @@
 import os
+import random
+import re
 from baseline.DRL.actor import *
 from baseline.Renderer.stroke_gen import *
 from baseline.Renderer.model import *
@@ -9,27 +11,17 @@ from core.global_data import g
 device = torch.device("cpu")
 width = 128
 
+
 class ModelCore(object):
+
+    # 声明对外公开可通过API接口访问的方法。如public_methods未声明或值为None则默认本class中定义的所有方法都对外公开。
+    public_methods = ('photo2painter_base64', 'gen_test_img_base64', )
+
     def __init__(self):
         # set default argument
-        self.max_step = 2
         self.actor = 'core/model/actor.pkl'
         self.renderer = 'core/model/renderer.pkl'
-        self.imgid = 0 # set begin number for generated image
-        self.divide = 4
-        self.canvas_cnt = self.divide * self.divide
-        self.T = torch.ones([1, 1, width, width], dtype=torch.float32).to(device)
 
-
-        self.coord = torch.zeros([1, 2, width, width])
-        for i in range(width):
-            for j in range(width):
-                self.coord[0, 0, i, j] = i / (width - 1.)
-                self.coord[0, 1, i, j] = j / (width - 1.)
-        self.coord = self.coord.to(device) # Coordconv
-
-        self.Decoder = FCN()
-        self.Decoder.load_state_dict(torch.load(self.renderer))
 
 
     def decode(self, x, canvas):  # b * (10 + 3)
@@ -118,9 +110,29 @@ class ModelCore(object):
                     'content': img_url,
                     'imgid': imgid
                 })
+        return img_url
 
 
     def do_paint(self, img, ws_topic):
+        results = []
+
+        self.max_step = 5
+        self.imgid = 0  # set begin number for generated image
+        self.divide = 4
+        self.canvas_cnt = self.divide * self.divide
+        self.T = torch.ones([1, 1, width, width], dtype=torch.float32).to(device)
+
+        self.coord = torch.zeros([1, 2, width, width])
+        for i in range(width):
+            for j in range(width):
+                self.coord[0, 0, i, j] = i / (width - 1.)
+                self.coord[0, 1, i, j] = j / (width - 1.)
+        self.coord = self.coord.to(device)  # Coordconv
+
+        self.Decoder = FCN()
+        self.Decoder.load_state_dict(torch.load(self.renderer))
+
+
         # img = cv2.imread(img_path, cv2.IMREAD_COLOR)
         origin_shape = (img.shape[1], img.shape[0])
 
@@ -141,7 +153,7 @@ class ModelCore(object):
         img = np.transpose(img, (0, 3, 1, 2))
         img = torch.tensor(img).to(device).float() / 255.
 
-        os.system('mkdir output')
+        # os.system('mkdir output')
 
         with torch.no_grad():
             if self.divide != 1:
@@ -153,8 +165,9 @@ class ModelCore(object):
                 print('canvas step {}, L2Loss = {}'.format(i, ((canvas - img) ** 2).mean()))
                 for j in range(5):
                     # self.save_img(res[j], self.imgid, origin_shape)
-                    self.send_img(res[j], origin_shape, self.imgid, ws_topic)
+                    result = self.send_img(res[j], origin_shape, self.imgid, ws_topic)
                     self.imgid += 1
+                    results.append(result)
             if self.divide != 1:
                 canvas = canvas[0].detach().cpu().numpy()
                 canvas = np.transpose(canvas, (1, 2, 0))
@@ -171,7 +184,35 @@ class ModelCore(object):
                     print('divided canvas step {}, L2Loss = {}'.format(i, ((canvas - patch_img) ** 2).mean()))
                     for j in range(5):
                         # self.save_img(res[j], self.imgid, origin_shape, True)
-                        self.send_img(res[j], origin_shape, self.imgid, ws_topic, True)
+                        result = self.send_img(res[j], origin_shape, self.imgid, ws_topic, True)
                         self.imgid += 1
+                        results.append(result)
+                return results
+
+    def photo2painter_base64(self, img_base64, ws_topic=None):
+        # TODO: add more arguments
+        img_base64 = re.sub('^data:image/.+;base64,', '', img_base64)
+        img = image_tools.get_bytes_from_base64(img_base64)
+        img_array = np.frombuffer(img, np.uint8)
+        img_cv = cv2.imdecode(img_array, cv2.COLOR_RGBA2RGB)
+        results = self.do_paint(img_cv, ws_topic)
+        return results
 
 
+    def gen_test_img_bin(self):
+        return image_tools.get_bytes_from_file('core/image_data/{}.png'.format(random.randint(1, 7)))
+
+    def gen_test_img_base64(self):
+        return image_tools.get_base64_from_file('core/image_data/{}.png'.format(random.randint(1, 7)))
+
+
+    def process_websocket_message(self, websocket, msg):
+        if g.event_loop is None:
+            g.event_loop = asyncio.get_event_loop()
+
+        if msg.get('type') == 'subscribe_photoPainter':
+            topic = msg.get('content')
+            if isinstance(topic, str):
+                if g.ws_connections.get(topic) is not None:
+                    g.ws_connections.pop(topic)
+                g.ws_connections[topic] = websocket
