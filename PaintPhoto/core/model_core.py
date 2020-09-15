@@ -19,8 +19,7 @@ class ModelCore(object):
 
     def __init__(self):
         # set default argument
-        self.actor = 'core/model/actor.pkl'
-        self.renderer = 'core/model/renderer.pkl'
+        pass
 
 
 
@@ -116,7 +115,9 @@ class ModelCore(object):
     def do_paint(self, img, ws_topic):
         results = []
 
-        self.max_step = 5
+        self.actor = 'core/model/actor.pkl'
+        self.renderer = 'core/model/renderer.pkl'
+        self.max_step = 7
         self.imgid = 0  # set begin number for generated image
         self.divide = 4
         self.canvas_cnt = self.divide * self.divide

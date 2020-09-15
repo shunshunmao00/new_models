@@ -73,14 +73,14 @@ export class HomeComponent implements OnInit {
             itemAlias: 'classify_bin',
         });
 
-        // this.fileSelector.onAfterAddingFile = (fileItem) => {
-        //     if (this.fileSelector.queue.length > 1) {
-        //         this.fileSelector.queue[0].remove();
-        //     }
-        //     this.readImgFile(fileItem._file);
-        //     this.uploadFile(fileItem);
-        //
-        // };
+        this.fileSelector.onAfterAddingFile = (fileItem) => {
+            if (this.fileSelector.queue.length > 1) {
+                this.fileSelector.queue[0].remove();
+            }
+            this.readImgFile(fileItem._file);
+            // this.uploadFile(fileItem);
+
+        };
     }
 
     connectWebSocket() {
@@ -111,39 +111,39 @@ export class HomeComponent implements OnInit {
         };
     }
 
-    // uploadFile(fileItem: FileItem) {
-    //     fileItem.onSuccess = (response, status, headers) => {
-    //         if (status === 200) {
-    //             const result = JSON.parse(response);
-    //             if (result['status'] === 'ok') {
-    //                 this.result = '识别结果：' + result['value'] + '';
-    //             } else {
-    //                 this.result = '出错啦：' + result['value'];
-    //             }
-    //         } else {
-    //             this.result = '出错啦：' + response;
-    //         }
-    //         this.sending = false;
-    //     };
-    //
-    //     fileItem.onError = (response, status, headers) => {
-    //         this.result = '出错啦：' + response;
-    //         this.sending = false;
-    //     };
-    //
-    //     this.result = null;
-    //     this.sending = true;
-    //     fileItem.upload();
-    // }
-    //
-    // readImgFile(file: File) {
-    //     const fileReader = new FileReader();
-    //     fileReader.readAsDataURL(file);
-    //     fileReader.onload = () => {
-    //         this.selectedImgDataUrl = fileReader.result;
-    //         // this.classify();
-    //     };
-    // }
+    uploadFile(fileItem: FileItem) {
+        fileItem.onSuccess = (response, status, headers) => {
+            if (status === 200) {
+                const result = JSON.parse(response);
+                if (result['status'] === 'ok') {
+                    this.result = '识别结果：' + result['value'] + '';
+                } else {
+                    this.result = '出错啦：' + result['value'];
+                }
+            } else {
+                this.result = '出错啦：' + response;
+            }
+            this.sending = false;
+        };
+
+        fileItem.onError = (response, status, headers) => {
+            this.result = '出错啦：' + response;
+            this.sending = false;
+        };
+
+        this.result = null;
+        this.sending = true;
+        fileItem.upload();
+    }
+
+    readImgFile(file: File) {
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file);
+        fileReader.onload = () => {
+            this.selectedImgDataUrl = fileReader.result;
+            // this.classify();
+        };
+    }
 
     genTestImage() {
         this.result = null;
