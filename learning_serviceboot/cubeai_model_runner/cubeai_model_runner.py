@@ -11,7 +11,7 @@ import tornado.websocket
 
 import os, sys
 sys.path.append(os.getcwd())
-from core.model_core import ModelCore
+from core.model_core import ModelCore    # 功能代码位置
 
 
 class GlobalData:
@@ -20,7 +20,7 @@ class GlobalData:
 
     def init_global_data(self):
         try:
-            self.model_core = ModelCore()
+            self.model_core = ModelCore()    # 初始化功能代码
             return True
         except Exception as e:
             logging.error(str(e))
@@ -30,9 +30,9 @@ class GlobalData:
 g = GlobalData()
 
 
-class ModelApi(tornado.web.RequestHandler):
+class ModelApi(tornado.web.RequestHandler):    # 按照Tornado格式，继承RequestHandler类，处理http请求
 
-    async def post(self, *args, **kwargs):
+    async def post(self, *args, **kwargs):    # 接收post请求
 
         try:
             input = json.loads(str(self.request.body, encoding='utf-8'))
@@ -51,14 +51,14 @@ class ModelApi(tornado.web.RequestHandler):
             'result': {},
             'finish': False
         }
-        thread = threading.Thread(
+        thread = threading.Thread(    # 新建线程运行model_runner函数
             target=model_runner,
             args=(input, output)
         )
-        thread.setDaemon(True)
+        thread.setDaemon(True)    # 将该线程设置为守护线程
         thread.start()
 
-        while not output['finish']:
+        while not output['finish']:    # TODO：这里会一直循环等到output的值变化吗,是因为是浅拷贝所以能监测output的值吗
             await asyncio.sleep(0.05)
 
         result = output['result']
@@ -77,10 +77,10 @@ class ModelApi(tornado.web.RequestHandler):
                 res = json.dumps(result, ensure_ascii=False)
             self.set_header('Content-Type', 'application/json; charset=UTF-8')
 
-        if self.request.headers.get('Origin'):
+        if self.request.headers.get('Origin'):    # 存在跨域的标志
             self.set_header('Access-Control-Allow-Credentials', 'true')
             self.set_header('Access-Control-Allow-Origin', self.request.headers.get('Origin'))
-        self.write(res)
+        self.write(res)    # post请求处理结束，返回处理结果
 
     async def options(self, *args, **kwargs):
         self.set_status(204)
@@ -102,7 +102,7 @@ def model_runner(input, output):
         output['finish'] = True
         return
 
-    method = input.get('method')
+    method = input.get('method')    # 获取处理请求需要的model_core中的方法
     kwargs = input.get('kwargs')
 
     if method is None:
@@ -126,7 +126,7 @@ def model_runner(input, output):
             return
 
     model = g.model_core
-    method_obj = getattr(model, method, None)
+    method_obj = getattr(model, method, None)    # 定义的接口方法会作为一个属性在model_core对象里
     if method_obj is None:
         result = {
             'value': '错误： 方法 {} 未定义！'.format(method),
@@ -155,7 +155,7 @@ class StreamApi(tornado.web.RequestHandler):
 
         input = {
             'method': method,
-            'arg': self.request.body,
+            'arg': self.request.body,    # 这里requestbody传入的流数据就是输入参数
         }
         output = {
             'result': {},
@@ -309,12 +309,12 @@ class FileApi(tornado.web.RequestHandler):
         return
     
 
-class WebSocketServer(tornado.websocket.WebSocketHandler):
+class WebSocketServer(tornado.websocket.WebSocketHandler):    # 继承tornado的方法
 
     def open(self):
         pass
 
-    def on_message(self, message):
+    def on_message(self, message):    # 核心是这个收到message的处理方法
         try:
             msg = json.loads(message, encoding='utf-8')
         except Exception as e:
@@ -370,7 +370,7 @@ def start():
             (r'/api/stream/(\w+)', StreamApi),
             (r'/api/file/(\w+)', FileApi),
             (r'/web/(.*)', tornado.web.StaticFileHandler, {'path': 'webapp/www', 'default_filename': 'index.html'}),
-            (r'/websocket', WebSocketServer),
+            (r'/websocket', WebSocketServer),    # 这里启动了websocket服务
         ],
         debug=('dev' == app_profile)
     )
