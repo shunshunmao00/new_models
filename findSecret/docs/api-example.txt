@@ -1,0 +1,9 @@
+{
+    "examples": [{
+        "method": "find_secret",
+        "kwargs": {
+            "git_url": "https://gitee.com/mirrors/CubeAI.git"
+		}
+    }]
+}
+
