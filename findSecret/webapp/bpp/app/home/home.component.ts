@@ -1,11 +1,14 @@
 import {Component, OnInit} from '@angular/core';
 import {ModelClient} from '../shared';
 import {v4 as uuid} from 'uuid';
-import {FileUploader} from 'ng2-file-upload';
-import {FileItem} from 'ng2-file-upload/file-upload/file-item.class';
+// import {FileUploader} from 'ng2-file-upload';
+// import {FileItem} from 'ng2-file-upload/file-upload/file-item.class';
 
 @Component({
     templateUrl: './home.component.html',
+    // styleUrls: [
+    //     './solution.css',
+    // ],
 })
 export class HomeComponent implements OnInit {
 
@@ -18,15 +21,13 @@ export class HomeComponent implements OnInit {
     websocket: WebSocket;
     tempResults = [];
     results = [];
-    // style = 'fire';
-    // scale = false;
-    // scale_step = 5;
-    // word: string;
     error: boolean;
     sending = false;
 
-    fileSelector: FileUploader;
-    selectedImgDataUrl: string;
+    // fileSelector: FileUploader;
+    // selectedImgDataUrl: string;
+    gitUrl: string;
+    do_entropy: boolean;
     result: string;
 
     constructor(
@@ -71,20 +72,20 @@ export class HomeComponent implements OnInit {
 
         this.connectWebSocket();
 
-        this.fileSelector = new FileUploader({
-            url: this.urlFile + 'classify_bin',
-            method: 'POST',
-            itemAlias: 'classify_bin',
-        });
+        // this.fileSelector = new FileUploader({
+        //     url: this.urlFile + 'classify_bin',
+        //     method: 'POST',
+        //     itemAlias: 'classify_bin',
+        // });
 
-        this.fileSelector.onAfterAddingFile = (fileItem) => {
-            if (this.fileSelector.queue.length > 1) {
-                this.fileSelector.queue[0].remove();
-            }
-            this.readImgFile(fileItem._file);
-            // this.uploadFile(fileItem);
-
-        };
+        // this.fileSelector.onAfterAddingFile = (fileItem) => {
+        //     if (this.fileSelector.queue.length > 1) {
+        //         this.fileSelector.queue[0].remove();
+        //     }
+        //     this.readImgFile(fileItem._file);
+        //     // this.uploadFile(fileItem);
+        //
+        // };
     }
 
     connectWebSocket() {
@@ -101,7 +102,7 @@ export class HomeComponent implements OnInit {
                 'content': this.wsTopic,
             }));
             that.websocket.send(JSON.stringify({
-                'type': 'subscribe_gif2png',
+                'type': 'subscribe_findSecret',
                 'topic': 'ability',
                 'receiver': this.modelUuid,
                 'content': this.wsTopic,
@@ -115,63 +116,63 @@ export class HomeComponent implements OnInit {
         };
     }
 
-    uploadFile(fileItem: FileItem) {
-        fileItem.onSuccess = (response, status, headers) => {
-            if (status === 200) {
-                const result = JSON.parse(response);
-                if (result['status'] === 'ok') {
-                    this.result = '识别结果：' + result['value'] + '';
-                } else {
-                    this.result = '出错啦：' + result['value'];
-                }
-            } else {
-                this.result = '出错啦：' + response;
-            }
-            this.sending = false;
-        };
+    // uploadFile(fileItem: FileItem) {
+    //     fileItem.onSuccess = (response, status, headers) => {
+    //         if (status === 200) {
+    //             const result = JSON.parse(response);
+    //             if (result['status'] === 'ok') {
+    //                 this.result = '识别结果：' + result['value'] + '';
+    //             } else {
+    //                 this.result = '出错啦：' + result['value'];
+    //             }
+    //         } else {
+    //             this.result = '出错啦：' + response;
+    //         }
+    //         this.sending = false;
+    //     };
+    //
+    //     fileItem.onError = (response, status, headers) => {
+    //         this.result = '出错啦：' + response;
+    //         this.sending = false;
+    //     };
+    //
+    //     this.result = null;
+    //     this.sending = true;
+    //     fileItem.upload();
+    // }
 
-        fileItem.onError = (response, status, headers) => {
-            this.result = '出错啦：' + response;
-            this.sending = false;
-        };
-
-        this.result = null;
-        this.sending = true;
-        fileItem.upload();
-    }
-
-    readImgFile(file: File) {
-        const fileReader = new FileReader();
-        fileReader.readAsDataURL(file);
-        fileReader.onload = () => {
-            this.selectedImgDataUrl = fileReader.result;
-            // this.classify();
-        };
-    }
-
-    genTestImage() {
-        this.result = null;
-        this.sending = true;
-        this.modelClient.access(this.urlModel, 'gen_test_img_base64', {}).subscribe(
-            (res) => {
-                if (res.body['status'] === 'ok') {
-                    this.selectedImgDataUrl = 'data:image/gif;base64,' + res.body['value'];
-                    this.sending = false;
-                } else {
-                    this.result = '出错啦：' + res.body['value'];
-                    this.sending = false;
-                }
-            }
-        );
-    }
-
-    paint() {
+    // readImgFile(file: File) {
+    //     const fileReader = new FileReader();
+    //     fileReader.readAsDataURL(file);
+    //     fileReader.onload = () => {
+    //         this.selectedImgDataUrl = fileReader.result;
+    //         // this.classify();
+    //     };
+    // }
+    //
+    // genTestImage() {
+    //     this.result = null;
+    //     this.sending = true;
+    //     this.modelClient.access(this.urlModel, 'gen_test_img_base64', {}).subscribe(
+    //         (res) => {
+    //             if (res.body['status'] === 'ok') {
+    //                 this.selectedImgDataUrl = 'data:image/gif;base64,' + res.body['value'];
+    //                 this.sending = false;
+    //             } else {
+    //                 this.result = '出错啦：' + res.body['value'];
+    //                 this.sending = false;
+    //             }
+    //         }
+    //     );
+    // }
+    //
+    doFind() {
         this.results = [];
         this.tempResults = [];
         this.sending = true;
         this.error = false;
-        this.modelClient.access(this.urlModel, 'split_gif_base64', {
-            'img_base64': this.selectedImgDataUrl,
+        this.modelClient.access(this.urlModel, 'find_secret', {
+            'git_url': this.gitUrl,
             'ws_topic': this.wsTopic,
         }).subscribe(
             (res) => {

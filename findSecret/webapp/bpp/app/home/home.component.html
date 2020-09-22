@@ -1,0 +1,38 @@
+<my-pageheader xmlns:width="http://www.w3.org/1999/xhtml"></my-pageheader>
+
+<mat-card style="margin: 20px 20px 50px 20px">
+    <h2 align="center">扫描git隐私信息</h2>
+    <div class="row justify-content-center">
+        <mat-card style="width: 90%">
+            <mat-form-field style="width: 600px">
+                <input matInput [(ngModel)]="gitUrl" type="text" placeholder="git clone地址 例如：https://github.com/cube-ai/cubeai-model-runner.git"
+                       maxlength="200" >
+            </mat-form-field>
+        </mat-card>
+    </div>
+    <br>
+    <div class="row justify-content-center">
+        <button mat-raised-button color="primary" (click)="doFind()" [disabled]="sending">
+            开始
+        </button>
+    </div>
+    <br>
+    <div class="row justify-content-center">
+        <mat-card style="width: 90%">
+            <div *ngIf="sending">
+                正在努力计算...
+            </div>
+            <mat-spinner *ngIf="sending"></mat-spinner>
+            <div class="row">
+                <mat-card *ngFor="let result of tempResults" class="pull-right" style="max-width: 700px; max-height: 400px; margin: 20px">
+                    <pre>{{result}}</pre>
+                </mat-card>
+            </div>
+            <br>
+            <div *ngIf="error">
+                出错啦...
+            </div>
+        </mat-card>
+    </div>
+</mat-card>
+
