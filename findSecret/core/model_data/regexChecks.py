@@ -26,4 +26,3 @@ regexes = {
 
 for key in regexes:
     regexes[key] = re.compile(regexes[key])
-    print(regexes[key])
