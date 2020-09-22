@@ -17,7 +17,8 @@ import stat
 
 from git import Repo
 from git import NULL_TREE
-from truffleHogRegexes.regexChecks import regexes
+# from truffleHogRegexes.regexChecks import regexes
+from core.model_data.regexChecks import regexes
 
 import asyncio
 from core_temp.global_data import g
@@ -139,7 +140,7 @@ def send_results(issue, ws_topic):
     result += 'reason: ' + issue['reason'] + '\n'
     result += 'path: ' + issue['path']
 
-    # print('result', result)
+    print('result', result)
     if ws_topic is not None:
         print('ws_topic', ws_topic)
         asyncio.set_event_loop(g.event_loop)
