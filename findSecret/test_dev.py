@@ -1,5 +1,5 @@
 # -*-coding:utf-8-*-
-from core_temp.model_core import ModelCore
+from core.model_core import ModelCore
 
 model_core = ModelCore()
 url = 'https://gitee.com/mirrors/CubeAI.git'

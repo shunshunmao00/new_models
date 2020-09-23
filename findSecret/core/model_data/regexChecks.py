@@ -1,4 +1,9 @@
-{
+# -*-coding:utf-8-*-
+import re
+import json
+import os
+
+regexes = {
     "Slack Token": "(xox[p|b|o|a]-[0-9]{12}-[0-9]{12}-[0-9]{12}-[a-z0-9]{32})",
     "RSA private key": "-----BEGIN RSA PRIVATE KEY-----",
     "SSH (OPENSSH) private key": "-----BEGIN OPENSSH PRIVATE KEY-----",
@@ -18,3 +23,6 @@
     "Twilio API Key": "SK[a-z0-9]{32}",
     "Password in URL": "[a-zA-Z]{3,10}://[^/\\s:@]{3,20}:[^/\\s:@]{3,20}@.{1,100}[\"'\\s]"
 }
+
+for key in regexes:
+    regexes[key] = re.compile(regexes[key])

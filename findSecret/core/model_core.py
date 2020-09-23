@@ -17,15 +17,19 @@ import stat
 
 from git import Repo
 from git import NULL_TREE
-from truffleHogRegexes.regexChecks import regexes
+# from truffleHogRegexes.regexChecks import regexes
+from core.model_data.regexChecks import regexes
 
 import asyncio
-from core_temp.global_data import g
+from core.global_data import g
 
 
 class ModelCore(object):
+    # 声明对外公开可通过API接口访问的方法。如public_methods未声明或值为None则默认本class中定义的所有方法都对外公开。
+    public_methods = ('find_secret')
+
     def __init__(self):
-        pass
+        os.system('apt-get install -y git')
 
 
     def find_secret(self, git_url, ws_topic=None):
@@ -139,7 +143,7 @@ def send_results(issue, ws_topic):
     result += 'reason: ' + issue['reason'] + '\n'
     result += 'path: ' + issue['path']
 
-    # print('result', result)
+    print('result', result)
     if ws_topic is not None:
         print('ws_topic', ws_topic)
         asyncio.set_event_loop(g.event_loop)
