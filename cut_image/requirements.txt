@@ -1,0 +1,8 @@
+# 声明Python版本
+# python==3.5.9
+#
+# 必须存在，不要删除
+cubeai_model_runner==2.3.1
+#
+# 在此添加模型特定的requirements
+pillow==6.2.1

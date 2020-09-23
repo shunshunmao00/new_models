@@ -1,0 +1,20 @@
+model_runner:
+  version: v2
+
+python:
+  version: 3.5.9
+
+model:
+  name: 朋友圈九宫格照片切分工具
+  version: v0.0.1
+
+apis:
+  - endpoint: /api/model
+    http_method: POST
+    body:
+      method: cut_image_base64
+      kwargs:
+        git_url: str  # 目标git仓库地址
+    response:
+      status: str  # [img url]|ok|err
+      value: int  # 隐私扫描结果 或 错误描述
